@@ -1,0 +1,1152 @@
+
+## P-00 — Build Your Operator Environment  {Ques}
+
+#### Full Project Brief
+
+---
+
+### 1. Project Identity
+
+**Number:** P-00 **Phase:** Phase 0 — Operator Foundation **Estimated time:** 2 focused days (12–14 hours total) **Prerequisite:** Kali VM running. Nothing else assumed.
+
+---
+
+### 2. Objective
+
+Build a professional, documented, version-controlled operator workspace that you will use for every project in this program — and never have to rebuild from scratch again.
+### 3. Methodology
+
+Work through this in exact sequence. Do not skip steps.
+
+**Day 1 — Environment build**
+
+```
+1. Boot Kali. Verify networking. Update system.
+2. Build ~/ops/ directory tree with a single command.
+3. Write setup_project.sh from scratch.
+4. Install and configure Obsidian on Windows.
+5. Create your first Obsidian vault: oscp-journey/
+6. Initialise your GitHub repo: oscp-journey
+7. Push your first commit.
+```
+
+**Day 2 — Verification and documentation**
+
+```
+1. Run setup_project.sh against a test project. Verify output.
+2. Write your P-00 project note in Obsidian using the standard template.
+3. Write README.md for your GitHub repo.
+4. Push everything. Review your repo from a browser — would a recruiter understand it?
+5. Answer the 3 challenge questions at the end of this brief.
+```
+
+---
+# P-00 — Operator Foundation Notes
+
+# Objective
+
+Build a professional Linux operator environment while learning:
+
+- Linux filesystem basics
+    
+- networking fundamentals
+    
+- Bash scripting
+    
+- troubleshooting methodology
+    
+- Git and GitHub workflow
+    
+- operational organization
+    
+
+This project was not about hacking yet.  
+It was about building the foundation an operator uses every day.
+
+---
+
+# 1. Networking Fundamentals
+
+## Verifying Internet Connectivity
+
+### Test Raw Connectivity
+
+```bash
+ping 8.8.8.8
+```
+
+Purpose:  
+Checks whether the machine can reach the internet directly using an IP address.
+
+Important:
+
+- This bypasses DNS.
+    
+- If this works, internet routing/connectivity exists.
+    
+
+---
+
+### Test DNS Resolution
+
+```bash
+ping google.com
+```
+
+Purpose:  
+Checks whether DNS is functioning.
+
+DNS translates:
+
+```text
+google.com → IP address
+```
+
+If:
+
+- `8.8.8.8` works
+    
+- but `google.com` fails
+    
+
+then:
+
+```text
+Internet works
+DNS is broken
+```
+
+---
+
+# DNS Concepts
+
+## What is DNS?
+
+DNS (Domain Name System) converts human-readable names into IP addresses.
+
+Example:
+
+```text
+google.com → 142.250.x.x
+```
+
+Without DNS:
+
+- websites would only be accessible through IP addresses.
+    
+
+---
+
+## DNS Configuration File
+
+```bash
+cat /etc/resolv.conf
+```
+
+Purpose:  
+Displays DNS resolver configuration.
+
+Typical output:
+
+```text
+nameserver 8.8.8.8
+```
+
+Meaning:  
+The system will use that DNS server to resolve domain names.
+
+---
+
+# Important Networking Troubleshooting Logic
+
+## Isolating Variables
+
+Meaning:  
+Troubleshoot one possible issue at a time.
+
+Possible variables:
+
+- DNS broken
+    
+- router issue
+    
+- VPN issue
+    
+- firewall issue
+    
+- network adapter issue
+    
+- no IP assigned
+    
+
+Example workflow:
+
+1. Check internet using IP
+    
+2. Check DNS using domain name
+    
+3. Check interface/IP
+    
+4. Check VPN adapter
+    
+5. Check routes
+    
+6. Check firewall
+    
+
+This is called:
+
+```text
+Systematic troubleshooting
+```
+
+---
+
+# VirtualBox Networking Issue Encountered
+
+Problem:
+
+```text
+Network is unreachable
+```
+
+Observed:
+
+```bash
+ip a
+```
+
+showed:
+
+```text
+127.0.0.1
+```
+
+Meaning:  
+Only loopback/self-networking existed.
+
+The VM had no real network connectivity.
+
+Fix:
+
+- Enable VirtualBox network adapter
+    
+- Use NAT networking
+    
+
+After fix:
+
+```text
+10.0.2.15
+```
+
+was assigned.
+
+Meaning:  
+The VM successfully obtained a network IP.
+
+---
+
+# Linux Filesystem & Directory Management
+
+## Create Directories
+
+```bash
+mkdir test
+```
+
+Creates a directory.
+
+---
+
+## Create Nested Directories
+
+```bash
+mkdir -p ~/ops/projects/internal-lab
+```
+
+`-p`:
+
+- creates parent directories automatically
+    
+- prevents errors if parent paths do not exist
+    
+
+---
+
+# Brace Expansion
+
+Purpose:  
+Create multiple paths efficiently.
+
+Example:
+
+```bash
+mkdir -p ~/ops/{projects,tools,loot}
+```
+
+Expands internally into:
+
+```text
+~/ops/projects
+~/ops/tools
+~/ops/loot
+```
+
+---
+
+## Nested Brace Expansion
+
+```bash
+mkdir -p ~/ops/scripts/{bash,python}
+```
+
+Creates:
+
+```text
+scripts/
+├── bash
+└── python
+```
+
+---
+
+# Final Operator Directory Structure
+
+```text
+~/ops/
+├── projects/
+├── scripts/
+│   ├── bash/
+│   └── python/
+├── tools/
+├── loot/
+└── notes/
+    ├── methodology/
+    ├── cheatsheets/
+    └── lessons-learned/
+```
+
+Purpose:
+
+- organization
+    
+- scalability
+    
+- repeatability
+    
+- operational consistency
+    
+
+---
+
+# Linux File Operations
+
+## Create Empty Files
+
+```bash
+touch file.txt
+```
+
+---
+
+## View File Contents
+
+```bash
+cat file.txt
+```
+
+---
+
+## Visualize Directory Trees
+
+```bash
+tree ~/ops
+```
+
+Purpose:  
+Display hierarchical directory structure.
+
+---
+
+# Bash Scripting Foundations
+
+## What is Bash?
+
+Bash is:
+
+```text
+A shell / command-line interpreter
+```
+
+It acts as the interface between:
+
+- user
+    
+- operating system
+    
+
+Flow:
+
+```text
+User → Bash → Linux OS → Result
+```
+
+---
+
+# First Bash Script
+
+## Script Creation
+
+```bash
+touch ~/ops/scripts/bash/setup_project.sh
+```
+
+---
+
+## Open Script
+
+```bash
+nano ~/ops/scripts/bash/setup_project.sh
+```
+
+---
+
+## Shebang
+
+```bash
+#!/bin/bash
+```
+
+Purpose:  
+Tells Linux which interpreter should execute the file.
+
+Meaning:
+
+```text
+Use Bash to run this script
+```
+
+---
+
+# Executable Permissions
+
+```bash
+chmod +x setup_project.sh
+```
+
+Purpose:  
+Make the script executable.
+
+Without execute permissions:
+
+- Linux treats it as a normal text file.
+    
+
+---
+
+# Script Execution Methods
+
+## Direct Execution
+
+```bash
+./setup_project.sh
+```
+
+Uses:
+
+- execute permissions
+    
+- shebang
+    
+
+---
+
+## Explicit Bash Execution
+
+```bash
+bash setup_project.sh
+```
+
+Bash manually interprets the script.
+
+Shebang is not required here.
+
+---
+
+# Bash Variables
+
+## Example Variable
+
+```bash
+NAME="Vish"
+```
+
+Stores:
+
+```text
+Vish
+```
+
+---
+
+## Retrieve Variable Value
+
+```bash
+echo $NAME
+```
+
+`$` means:
+
+```text
+Retrieve stored value
+```
+
+---
+
+# Environment Variables
+
+Examples:
+
+```bash
+$HOME
+$USER
+$PATH
+```
+
+---
+
+## Example
+
+```bash
+echo $HOME
+```
+
+Displays:
+
+```text
+/home/kali
+```
+
+Meaning:  
+Current user home directory.
+
+---
+
+# Session-Scoped Storage
+
+Variables created in terminal sessions exist:
+
+```text
+Only while the shell session is running
+```
+
+When terminal closes:
+
+- temporary variables disappear.
+    
+
+---
+
+# Bash Script Arguments
+
+## First Argument
+
+```bash
+$1
+```
+
+Meaning:
+
+```text
+First argument passed into the script
+```
+
+Example:
+
+```bash
+./setup_project.sh web-lab
+```
+
+Internally:
+
+```text
+$1 = web-lab
+```
+
+---
+
+# Script Automation
+
+## Automated Project Creation
+
+```bash
+mkdir -p ~/ops/projects/"$1"/{loot,scans,notes,reports}
+```
+
+Purpose:  
+Automatically create project structures dynamically.
+
+Example:
+
+```bash
+./setup_project.sh web-lab
+```
+
+Creates:
+
+```text
+web-lab/
+├── loot
+├── scans
+├── notes
+└── reports
+```
+
+---
+
+# Input Validation
+
+## If Condition
+
+```bash
+if [ -z "$1" ]
+```
+
+Meaning:
+
+```text
+If first argument is empty
+```
+
+`-z`:  
+Checks whether string length is zero.
+
+---
+
+## Usage Message
+
+```bash
+echo "Usage: $0 <project-name>"
+```
+
+Purpose:  
+Display correct script usage syntax.
+
+`$0`:  
+Represents the script name itself.
+
+`<project-name>`:  
+Placeholder/example input.
+
+---
+
+## Exit Command
+
+```bash
+exit 1
+```
+
+Purpose:  
+Stop script execution due to an error/invalid usage.
+
+---
+
+# Manual Directory Management
+
+## Manual Nested Creation
+
+```bash
+mkdir -p ~/ops/projects/internal-lab/{loot,notes,reports,scans}
+```
+
+---
+
+## Recursive Deletion
+
+```bash
+rm -r ~/ops/projects/internal-lab
+```
+
+`-r`:  
+Recursive deletion.
+
+Deletes:
+
+- directory
+    
+- subdirectories
+    
+- contents
+    
+
+Important:  
+Linux deletion is dangerous.  
+There is no recycle bin.
+
+---
+
+# Obsidian Knowledge Base
+
+## Vault Concept
+
+A vault is:
+
+```text
+A dedicated workspace/folder for notes
+```
+
+---
+
+## Suggested Structure
+
+```text
+oscp-journey/
+├── methodology/
+├── cheatsheets/
+├── lessons-learned/
+├── projects/
+└── troubleshooting/
+```
+
+Purpose:  
+Build a structured cybersecurity knowledge base.
+
+---
+
+# Git & GitHub Fundamentals
+
+# Core Difference
+
+## Git
+
+Local version-control system.
+
+Tracks changes/history on your machine.
+
+---
+
+## GitHub
+
+Remote cloud platform hosting Git repositories.
+
+---
+
+# Git Workflow
+
+```text
+Working files
+↓
+git add
+↓
+Staging area
+↓
+git commit
+↓
+Git history (.git)
+↓
+git push
+↓
+GitHub
+```
+
+---
+
+# Git Initialization
+
+```bash
+git init
+```
+
+Purpose:  
+Initialize a Git repository.
+
+Creates hidden directory:
+
+```text
+.git
+```
+
+inside the repository.
+
+---
+
+# Hidden Files
+
+```bash
+ls -la
+```
+
+`-a`:  
+Show hidden files.
+
+Files beginning with `.` are hidden.
+
+---
+
+# Git Status
+
+```bash
+git status
+```
+
+Purpose:  
+Report repository state.
+
+Shows:
+
+- modified files
+    
+- untracked files
+    
+- staged files
+    
+- commit readiness
+    
+
+---
+
+# Tracked vs Untracked Files
+
+## Untracked
+
+Git sees the file exists but is not version-controlled yet.
+
+---
+
+## Tracked
+
+Git officially monitors the file for changes/history.
+
+---
+
+# Staging Area
+
+Purpose:  
+Prepare selected changes before committing.
+
+Allows selective saving of work.
+
+---
+
+# Git Add
+
+```bash
+git add .
+```
+
+Meaning:
+
+```text
+Add all current files for tracking/staging
+```
+
+`.` means:  
+Current directory.
+
+---
+
+# Git Commit
+
+```bash
+git commit -m "Initial operator environment setup"
+```
+
+Purpose:  
+Create a permanent snapshot/checkpoint.
+
+`-m`:  
+Commit message.
+
+Commits preserve:
+
+- history
+    
+- recoverability
+    
+- previous versions
+    
+- change tracking
+    
+
+---
+
+# Git Log
+
+```bash
+git log
+```
+
+Purpose:  
+View commit history.
+
+Shows:
+
+- commit IDs
+    
+- author
+    
+- date
+    
+- commit messages
+    
+
+---
+
+# Git Commit Hashes
+
+Example:
+
+```text
+119618c2c7ad49a99f7ae8af58d53d9b02d4c07a
+```
+
+Purpose:  
+Unique identifier for a commit snapshot.
+
+---
+
+# Git Remote Repository
+
+## Add Remote
+
+```bash
+git remote add origin <repo-url>
+```
+
+Purpose:  
+Connect local Git repository to GitHub repository.
+
+`origin`:  
+Default nickname for remote repository.
+
+---
+
+# View Remote Configuration
+
+```bash
+git remote -v
+```
+
+Displays:
+
+- fetch URL
+    
+- push URL
+    
+
+---
+
+# SSH vs HTTPS Authentication
+
+## SSH
+
+Uses:
+
+- public/private keys
+    
+
+Error encountered:
+
+```text
+Permission denied (publickey)
+```
+
+---
+
+## HTTPS
+
+Uses:
+
+- username
+    
+- Personal Access Token (PAT)
+    
+
+---
+
+# GitHub Personal Access Token (PAT)
+
+Purpose:  
+Authentication mechanism replacing GitHub passwords.
+
+Important:
+
+- behaves like a password
+    
+- should never be shared publicly
+    
+
+Required permission:
+
+```text
+repo
+```
+
+---
+
+# Change Remote URL
+
+```bash
+git remote set-url origin https://github.com/USERNAME/REPO.git
+```
+
+Purpose:  
+Switch repository authentication method.
+
+---
+
+# Git Push
+
+```bash
+git push -u origin master
+```
+
+Purpose:  
+Upload local commits to GitHub.
+
+`-u`:  
+Remember remote tracking relationship.
+
+After successful push:
+
+- repository becomes available online
+    
+- GitHub stores remote history
+    
+- future pushes become simpler
+    
+
+---
+
+# Important Operator Lessons Learned
+
+## 1. Troubleshooting Must Be Systematic
+
+Do not guess.  
+Isolate variables one-by-one.
+
+---
+
+## 2. Read Error Messages Carefully
+
+Most errors directly explain:
+
+- what failed
+    
+- where it failed
+    
+- what is missing
+    
+
+---
+
+## 3. Verify Everything
+
+Always:
+
+- check outputs
+    
+- inspect paths
+    
+- verify interfaces
+    
+- validate results
+    
+
+---
+
+## 4. Automation Comes After Understanding
+
+First:
+
+- manual workflow
+    
+
+Then:
+
+- scripting
+    
+- automation
+    
+
+---
+
+## 5. Linux Is Configuration-Driven
+
+Many system behaviors are controlled by:
+
+- files
+    
+- permissions
+    
+- environment variables
+    
+- services
+    
+- configurations
+    
+
+---
+
+# Final Outcome of Day 1
+
+Successfully learned and implemented:
+
+- Linux filesystem basics
+    
+- networking fundamentals
+    
+- DNS troubleshooting
+    
+- VirtualBox networking recovery
+    
+- Bash scripting basics
+    
+- shell variables
+    
+- script arguments
+    
+- input validation
+    
+- automation concepts
+    
+- project structure automation
+    
+- Git fundamentals
+    
+- GitHub integration
+    
+- PAT authentication
+    
+- repository management
+    
+- operational organization
+    
+
+---
+
+# Current Repository
+
+GitHub Repository:
+
+[https://github.com/Vishxnux3005/Oscp-journey](https://github.com/Vishxnux3005/Oscp-journey)
+
+---
+
+# Current Automation Script
+
+```bash
+#!/bin/bash
+
+if [ -z "$1" ]
+then
+    echo "Usage: $0 <project-name>"
+    exit 1
+fi
+
+mkdir -p ~/ops/projects/"$1"/{loot,scans,notes,reports}
+
+echo "Project $1 created successfully"
+```
+
